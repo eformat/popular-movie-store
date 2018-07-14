@@ -88,3 +88,11 @@ footer #logo-redhat {
     text-indent: -9999px;
     width: 106px;
 }
+
+.movie-title-font {
+    display: inline-block;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
