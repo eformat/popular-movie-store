@@ -18,6 +18,7 @@
       <store-as-binary keys="true" values="true"/>
       <persistence passivation="false">
         <store class="org.infinispan.persistence.cassandra.CassandraStore" shared="true">
+          <write-behind />
           <property name="autoCreateKeyspace">true</property>
           <property name="keyspace">moviestore</property>
           <property name="entryTable">sessions</property>
@@ -36,6 +37,7 @@
       <expiration lifespan="86400000"/>
       <persistence passivation="false">
         <store class="org.infinispan.persistence.cassandra.CassandraStore" shared="true">
+          <write-behind />
           <property name="autoCreateKeyspace">true</property>
           <property name="keyspace">moviestore</property>
           <property name="entryTable">movies</property>
