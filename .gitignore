@@ -1,3 +1,11 @@
 .idea
 target/
 *.iml
+yabak
+.attach_pid*
+hotspot-pid-*
+libyjpagent.so
+*.jfc
+.classpath
+.project
+.settings

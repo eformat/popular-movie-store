@@ -19,19 +19,29 @@ package org.workspace7.moviestore.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.TrustStrategy;
 import org.infinispan.AdvancedCache;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.stream.CacheCollectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.workspace7.moviestore.config.MovieStoreProps;
 import org.workspace7.moviestore.data.Movie;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,10 +63,42 @@ public class MovieDBHelper {
 
     final AdvancedCache<Object, Object> moviesCache;
 
+    private RestTemplate initSSL() {
+        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+
+        SSLContext sslContext = null;
+        try {
+            sslContext = org.apache.http.ssl.SSLContexts.custom()
+                .loadTrustMaterial(null, acceptingTrustStrategy)
+                .build();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
+
+        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+
+        CloseableHttpClient httpClient = HttpClients.custom()
+            .setSSLSocketFactory(csf)
+            .build();
+
+        HttpComponentsClientHttpRequestFactory requestFactory =
+            new HttpComponentsClientHttpRequestFactory();
+
+        requestFactory.setHttpClient(httpClient);
+
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        return restTemplate;
+    }
+
     @Autowired
     public MovieDBHelper(RestTemplate restTemplate, MovieStoreProps movieStoreProps,
                          EmbeddedCacheManager cacheManager) {
-        this.restTemplate = restTemplate;
+        //this.restTemplate = restTemplate;
+        this.restTemplate = initSSL();
         this.movieStoreProps = movieStoreProps;
         this.moviesCache = cacheManager
             .getCache(POPULAR_MOVIES_CACHE).getAdvancedCache();
@@ -74,8 +116,8 @@ public class MovieDBHelper {
             log.info("No movies exist in cache, loading cache ..");
 
             UriComponentsBuilder moviesUri = UriComponentsBuilder
-                .fromUriString(movieStoreProps.getApiEndpointUrl() + "/movie/popular")
-                .queryParam("api_key", movieStoreProps.getApiKey());
+                .fromUriString(movieStoreProps.getApiEndpointUrl() + "/3/movie/popular")
+                .queryParam("api_key", "4d47b1405a8604b5010c5ac7b78ddd9a");//movieStoreProps.getApiKey());
 
             final URI requestUri = moviesUri.build().toUri();
 

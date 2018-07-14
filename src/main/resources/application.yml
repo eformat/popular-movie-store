@@ -1,9 +1,9 @@
 moviestore:
-  apiEndpointUrl: "https://api.themoviedb.org/3"
+  apiEndpointUrl: "https://localhost:3000"
   apiKey: "${API_KEY}"
 infinispan:
   embedded:
-    config-xml: infinispan-moviestore.xml
+    config-xml: infinispan-cassandra-moviestore.xml
 spring:
   thymeleaf:
     mode: HTML
