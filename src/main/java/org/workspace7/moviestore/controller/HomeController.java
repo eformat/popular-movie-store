@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class HomeController {
 
-
     final MovieDBHelper movieDBHelper;
 
     final SpringEmbeddedCacheManager cacheManager;

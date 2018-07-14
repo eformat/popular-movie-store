@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SessionsController {
 
-
     final EmbeddedCacheManager cacheManager;
 
     @Autowired
@@ -114,11 +113,11 @@ public class SessionsController {
                 rootNode.set("sessions", sessionsArray);
             }
             jsonResponse = sessions.writeValueAsString(rootNode);
+
         } catch (Exception e) {
             log.error("Error building JSON response for sesisons", e);
         }
 
         return jsonResponse;
     }
-
 }

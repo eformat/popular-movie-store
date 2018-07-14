@@ -18,8 +18,11 @@ package org.workspace7.moviestore.data;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.core.ResolvableType;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  * @author kameshs
@@ -31,4 +34,3 @@ public class MovieCartItem implements Serializable {
     private int quantity;
     private double total;
 }
-
