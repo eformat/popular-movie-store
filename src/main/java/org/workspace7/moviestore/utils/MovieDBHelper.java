@@ -117,7 +117,7 @@ public class MovieDBHelper {
 
             UriComponentsBuilder moviesUri = UriComponentsBuilder
                 .fromUriString(movieStoreProps.getApiEndpointUrl() + "/3/movie/popular")
-                .queryParam("api_key", "4d47b1405a8604b5010c5ac7b78ddd9a");//movieStoreProps.getApiKey());
+                .queryParam("api_key", movieStoreProps.getApiKey());
 
             final URI requestUri = moviesUri.build().toUri();
 
