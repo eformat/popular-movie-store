@@ -1,7 +1,6 @@
 .idea
 target/
 *.iml
-yabak
 .attach_pid*
 hotspot-pid-*
 libyjpagent.so
@@ -9,3 +8,5 @@ libyjpagent.so
 .classpath
 .project
 .settings
+package-lock.json
+

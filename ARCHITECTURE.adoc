@@ -69,7 +69,7 @@ you can run the mock servive recorded using https://github.com/flickr/yakbak[Yak
 [source,bash,options="wrap"]
 ----
 $ cd popular-movie-store/yabak/movies
-$ npm i
+$ npm install
 $ npm start
 ----
 
