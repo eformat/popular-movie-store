@@ -58,7 +58,7 @@ Technical Stack from top to bottom:
 
 The cache is configured for write-behind which persists data asynchronously to the actual Cassandra store.
 
-See - http://infinispan.org/docs/9.0.x/user_guide/user_guide.html#cluster_cache_loader
+See - http://infinispan.org/docs/9.2.x/user_guide/user_guide.html#cluster_cache_loader
 
 === Locally
 
