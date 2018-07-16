@@ -1,0 +1,185 @@
+== Microservices Architecture
+
+[ditaa]
+----
+         /------\           /------\
+         | User |           | User |
+         \------/           \------/
+             |                  |
+ +-----------|------------------|-----------+
+ | OpenShift |                  |           |
+ |           v                  v           |
+ |  /------------------------------------\  |
+ |  |           Load Balancer            |  |
+ |  \------------------------------------/  |
+ |          |                    |          |
+ |  /---------------\    /---------------\  |
+ |  |Pod            |    |Pod            |  |
+ |  | /-----------\ |    | /-----------\ |  |
+ |  | |    Web    | |    | |    Web    | |  |
+ |  | \-----------/ |    | \-----------/ |  |
+ |  |       |       |    |       |       |  |
+ |  |       |       |    |       |       |  |
+ |  |       v       |    |       v       |  |
+ |  | /-----------\ |    | /-----------\ |  |
+ |  | |    API    | |    | |    API    | |  |
+ |  | \-----------/ |    | \-----------/ |  |
+ |  |       |       |    |       |       |  |
+ |  |       |       |    |       |       |  |
+ |  |       v       |    |       v       |  |
+ |  | /-----------\ |    | /-----------\ |  |
+ |  | |   Cache   |<------>|   Cache   | |  |
+ |  | \-----------/ |    | \-----------/ |  |
+ |  \---------------/    \---------------/  |
+ |          |                     |         |
+ |          v                     v         |
+ |  /------------------------------------\  |
+ |  | /-----------\        /-----------\ |  |
+ |  | | DataStore |--------| DataStore | |  |
+ |  | \-----------/        \-----------/ |  |
+ |  |             \        /             |  |
+ |  |           /-----------\            |  |
+ |  |  NoSQL    | DataStore |            |  |
+ |  |           \-----------/            |  |
+ |  \------------------------------------/  |
+ +------------------------------------------+
+----
+
+Technical Stack from top to bottom:
+
+- Spring Web MVC - Thymeleaf - https://www.thymeleaf.org
+- Undertow - http://undertow.io
+- Spring Boot - https://spring.io/projects/spring-boot
+- Lombok Library - https://projectlombok.org/
+- OpenJDK - http://openjdk.java.net/
+- Infinispan Cache (Library Mode) - https://infinispan.org
+- Datastax (Cassandra) - https://www.datastax.com
+- OpenShift - https://www.openshift.com
+
+The cache is configured for write-behind which persists data asynchronously to the actual Cassandra store.
+
+See - http://infinispan.org/docs/9.0.x/user_guide/user_guide.html#cluster_cache_loader
+
+=== Locally
+
+===== (Optional) External API Mock
+If you Don't have a https://www.themoviedb.org/documentation/api[themoviedb] API Key
+you can run the mock servive recorded using https://github.com/flickr/yakbak[Yakbak]
+
+[source,bash,options="wrap"]
+----
+$ cd popular-movie-store/yabak/movies
+$ npm i
+$ npm start
+----
+
+Else if you want to sign up see - https://www.themoviedb.org/documentation/api
+
+[source,bash,options="wrap"]
+----
+echo -n '<your api key>' | base64
+----
+
+===== Datastax
+
+If you want to run without a data store altogether - change `application.yml` to use
+
+[source,bash,options="wrap"]
+----
+infinispan:
+  embedded:
+    config-xml: infinispan-no-datastore-moviestore.xml
+[source,bash,options="wrap"]
+----
+
+To run a Single instance of Cassandra for testing - see https://academy.datastax.com/content/docker-tutorial
+
+[source,bash,options="wrap"]
+----
+docker run -e DS_LICENSE=accept --name my-dse -p 9042:9042 -d datastax/dse-server
+----
+
+And change `application.yml` to use
+
+[source,bash,options="wrap"]
+----
+infinispan:
+  embedded:
+    config-xml: infinispan-local-cassandra-moviestore.xml
+[source,bash,options="wrap"]
+----
+
+The default setting is to run in OpenShift, with cassandra service listening on `cassandra.cassandra.svc[9042]`
+
+[source,bash,options="wrap"]
+----
+infinispan:
+  embedded:
+    config-xml: infinispan-cassandra-moviestore.xml
+[source,bash,options="wrap"]
+----
+
+
+===== Application
+
+Run the application locally
+
+[source,bash,options="wrap"]
+----
+export API_KEY=<base64 encoded moviedb api-key || empty if using mock>
+export API_URL=<https://api.themoviedb.org || https://localhost:3000>
+$ ./mvnw spring-boot:run
+----
+
+
+
+===== Test
+
+Browse to
+
+[source,bash,options="wrap"]
+----
+http://localhost:8080
+----
+
+Add some items to your cart.
+
+Check casandra database has been written to:
+
+[source,bash,options="wrap"]
+----
+$ docker exec -it my-dse bash
+$ cqlsh
+cqlsh> desc moviestore
+cqlsh> select * from moviestore.movies;
+cqlsh> select * from moviestore.sessions;
+----
+
+stop dse, see if cache still works
+
+=== OpenShift
+
+
+
+--
+oc adm pod-network make-projects-global cassandra
+
+--
+oc new-project movie-store
+
+
+run clusters
+failover clients
+canary deploy
+
+=== Cache settings and Application Behaviour
+
+* Session Cache Settings
+http://infinispan.org/docs/9.0.x/user_guide/user_guide.html#configuration_3
+
+preload - saves session cache, preloads
+<write-behind />
+shared - cache loader is shared among different cache instances
+
+- can restart db (and cache used)
+- can restart app (and preloads saved cart) - http://localhost:8080/sessions

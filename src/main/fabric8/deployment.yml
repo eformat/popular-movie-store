@@ -6,8 +6,8 @@ spec:
       containers:
       - env:
         - name: JAVA_OPTIONS
-          #value: "-Xms128m -Xmx512m -Djava.net.preferIPv4Stack=true -agentpath:/deployments/libyjpagent.so"
-          value: "-Xms128m -Djava.net.preferIPv4Stack=true -agentpath:/deployments/libyjpagent.so"
+          #value: "-Xms128m -Djava.net.preferIPv4Stack=true -agentpath:/deployments/libyjpagent.so"
+          value: "-Xms128m -Djava.net.preferIPv4Stack=true"
         - name: OPENSHIFT_KUBE_PING_LABELS
           value: "project=${project.artifactId}"
         - name: OPENSHIFT_KUBE_PING_NAMESPACE
@@ -20,6 +20,8 @@ spec:
             secretKeyRef:
               name: "${project.artifactId}"
               key: apiKey
+        - name: API_URL
+          value: "https://api.themoviedb.org"
         name: "${project.artifactId}"
         ports:
         - containerPort: 8080
@@ -35,12 +37,12 @@ spec:
           httpGet:
             port: http
             path: /healthz
-          initialDelaySeconds: 180
+          initialDelaySeconds: 30
         readinessProbe:
           httpGet:
             port: http
             path: /healthz
-          initialDelaySeconds: 180
+          initialDelaySeconds: 30
         volumeMounts:
           - name: config
             mountPath: /deployments/config

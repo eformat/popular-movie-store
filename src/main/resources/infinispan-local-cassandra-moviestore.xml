@@ -24,7 +24,7 @@
           <property name="entryTable">sessions</property>
           <property name="consistencyLevel">LOCAL_ONE</property>
           <property name="serialConsistencyLevel">SERIAL</property>
-          <property name="servers">cassandra.cassandra.svc[9042]</property>
+          <property name="servers">127.0.0.1[9042]</property>
           <property name="connectionPool.heartbeatIntervalSeconds">30</property>
           <property name="connectionPool.idleTimeoutSeconds">120</property>
           <property name="connectionPool.poolTimeoutMillis">5</property>
@@ -43,7 +43,7 @@
           <property name="entryTable">movies</property>
           <property name="consistencyLevel">LOCAL_ONE</property>
           <property name="serialConsistencyLevel">SERIAL</property>
-          <property name="servers">cassandra.cassandra.svc[9042]</property>
+          <property name="servers">127.0.0.1[9042]</property>
           <property name="connectionPool.heartbeatIntervalSeconds">30</property>
           <property name="connectionPool.idleTimeoutSeconds">120</property>
           <property name="connectionPool.poolTimeoutMillis">5</property>

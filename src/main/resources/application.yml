@@ -1,5 +1,5 @@
 moviestore:
-  apiEndpointUrl: "https://localhost:3000"
+  apiEndpointUrl: "${API_URL}"
   apiKey: "${API_KEY}"
 infinispan:
   embedded:
