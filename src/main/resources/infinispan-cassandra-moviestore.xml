@@ -11,7 +11,7 @@
   <!-- http://infinispan.org/docs/cachestores/cassandra/ -->
   <cache-container name="clustered" default-cache="popular-movies-cache" statistics="true">
 
-    <!--transport stack="configurationFile" cluster="PopularMovieStore" lock-timeout="60000"/-->
+    <transport stack="configurationFile" cluster="PopularMovieStore" lock-timeout="60000"/>
 
     <!-- The cache that manages HTTP session-->
     <distributed-cache name="moviestore-sessions-cache" mode="SYNC" start="EAGER" statistics="true">
