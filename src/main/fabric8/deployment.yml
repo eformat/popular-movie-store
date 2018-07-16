@@ -7,7 +7,8 @@ spec:
       - env:
         - name: JAVA_OPTIONS
           #value: "-Xms128m -Xmx512m -Djava.net.preferIPv4Stack=true -agentpath:/deployments/libyjpagent.so"
-          value: "-Xms128m -Djava.net.preferIPv4Stack=true -agentpath:/deployments/libyjpagent.so"
+          #value: "-Xms128m -Djava.net.preferIPv4Stack=true -agentpath:/deployments/libyjpagent.so"
+          value: "-Xms128m -Djava.net.preferIPv4Stack=true"
         - name: OPENSHIFT_KUBE_PING_LABELS
           value: "project=${project.artifactId}"
         - name: OPENSHIFT_KUBE_PING_NAMESPACE
