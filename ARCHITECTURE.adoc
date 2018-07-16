@@ -159,27 +159,41 @@ stop dse, see if cache still works
 
 === OpenShift
 
+Deploy replicated cassandra in cassandra namesapce - see https://github.com/eformat/openshift-datastax
 
+Make the namespace global so we can talk to it
 
---
-oc adm pod-network make-projects-global cassandra
+[source,bash,options="wrap"]
+----
+$ oc adm pod-network make-projects-global cassandra
+----
 
---
-oc new-project movie-store
+Deploy our movie store application in a separate namespace
 
+[source,bash,options="wrap"]
+----
+$ oc new-project movie-store
+$ mvn fabric8:deploy
+----
 
-run clusters
-failover clients
-canary deploy
+===== Test
+
+- Scale up application to 2 pods
+- Add items to shopping basket
+- Kill one pod - your web session is replicated, items in basket remain
+
+Can see cached sessions in - http://popular-movie-store-movie-store.apps.<your-domain>/sessions
+
+Scale down cassandra cache store. The in memory cache will still hold cached session replicas. Can then scale back up.
+
+[source,bash,options="wrap"]
+----
+$ oc scale statefulset cassandra --replicas=0 -n cassandra
+----
 
 === Cache settings and Application Behaviour
 
-* Session Cache Settings
-http://infinispan.org/docs/9.0.x/user_guide/user_guide.html#configuration_3
+Using a shared, preloaded, write-behind cache
 
-preload - saves session cache, preloads
-<write-behind />
-shared - cache loader is shared among different cache instances
-
-- can restart db (and cache used)
-- can restart app (and preloads saved cart) - http://localhost:8080/sessions
+- Session Cache Settings description
+http://infinispan.org/docs/9.2.x/user_guide/user_guide.html#configuration_3
